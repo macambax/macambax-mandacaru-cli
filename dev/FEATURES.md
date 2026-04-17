@@ -249,6 +249,26 @@
 - [ ] `mandacaru mcp start` — MCP server for Claude Code integration
 - [ ] Ask "what did I spend this week?" from VS Code
 
+### F-107: Local Web UI
+- [ ] FastAPI server at `http://localhost:4242` alongside CLI
+- [ ] Single HTML page reading from SQLite (no SPA framework)
+- [ ] Runs in parallel with CLI; CLI remains first-class
+
+### F-108: Carbon Footprint Estimation
+- [ ] Estimate kgCO₂e per provider based on usage data
+- [ ] Surface in `mandacaru report` alongside cost
+
+### F-109: GitHub Actions CI/CD
+- [ ] Automated pytest on every PR
+- [ ] Ruff lint on every PR
+- [ ] Matrix: Python 3.11, 3.12, 3.13
+
+### F-110: Security & Trust Documentation
+- [ ] `SECURITY.md` — transparent data-collection practices
+- [ ] Public guarantee: no API keys ever logged, even in tracebacks
+- [ ] Document open-core boundary (Phase 2 free vs Phase 3 paid)
+- [ ] First-class self-host instructions
+
 ---
 
 ## Phase 3 Features (Future — SaaS)
@@ -265,6 +285,26 @@
 - [ ] F-207: Anomaly detection (flags unusual spikes)
 - [ ] F-208: Cost attribution (tag by project/client/feature)
 - [ ] F-209: REST API for programmatic access
+- [ ] F-210: GCP Secret Manager for encrypted credential storage
+- [ ] F-211: Audit logging for every credential access
+- [ ] F-212: Public status page + post-mortems for every incident
+- [ ] F-213: Instant token revocation UI
+- [ ] F-214: "Bring Your Own Database" option (extreme-privacy tier)
+- [ ] F-215: GitHub OAuth (first cloud integration for trust)
+- [ ] F-216: Affiliate/referral integrations (Anthropic, OpenAI, GCP programs)
+
+---
+
+## Cross-Phase Principles
+
+> Invariants from `zzz_context_docs/mandacaru_recommendations.md` — must hold in every phase.
+
+- The CLI always works, in every phase
+- The open source core is always free and auditable
+- Credentials are always read-only billing scopes — never AI keys
+- Mandacaru is always local-first; cloud is a convenience, not a requirement
+- Code is always Apache 2.0 licensed
+- Self-host option is never removed
 
 ---
 
