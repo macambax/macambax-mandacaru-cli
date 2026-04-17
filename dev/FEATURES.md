@@ -1,20 +1,20 @@
-# Mandacarú — Feature Tracker
+# Mandacaru — Feature Tracker
 
 > **Methodology:** Spec Kit (`/specify` → `/plan` → `/tasks` → `/implement`)
 > **Phase:** 1 — Local CLI
-> **Status:** Not Started
+> **Status:** Sprint 1 in progress — F-001 complete
 
 ---
 
 ## Sprint 1 — Foundation
 
-### F-001: Project Scaffolding
-- [ ] Create `mandacaru/` package with project structure per spec
-- [ ] Create `pyproject.toml` with all dependencies (typer, rich, playwright, sqlalchemy, httpx, apscheduler, python-dotenv)
-- [ ] Set up virtual environment
-- [ ] Install Playwright browsers (`playwright install chromium`)
-- [ ] Create `CLAUDE.md` in project root for AI context
-- [ ] Create `.env.example` template
+### F-001: Project Scaffolding ✅
+- [x] Create `mandacaru/` package with project structure per spec
+- [x] Create `pyproject.toml` with all dependencies (typer, rich, playwright, sqlalchemy, httpx, apscheduler, python-dotenv)
+- [x] Set up virtual environment
+- [x] Install Playwright browsers (`playwright install chromium`)
+- [x] Create `CLAUDE.md` in project root for AI context
+- [x] Create `.env.example` template
 
 ### F-002: Database Layer
 - [ ] `mandacaru/db/__init__.py`
@@ -121,7 +121,7 @@
 - [ ] Send screenshot to `llama3.2-vision` model
 - [ ] Parse structured JSON from vision response
 - [ ] Handle connection errors to Ollama gracefully
-- [ ] Track Mandacarú's own Ollama cost (self-tracking, transparent by design)
+- [ ] Track Mandacaru's own Ollama cost (self-tracking, transparent by design)
 
 ### F-015: Vision Prompt Templates
 - [ ] `mandacaru/vision/prompts.py` — extraction prompt templates per provider
@@ -268,4 +268,4 @@
 
 ---
 
-*Mandacarú · MacambaX AI LLC · April 2026*
+*Mandacaru · MacambaX AI LLC · April 2026*
