@@ -8,7 +8,7 @@ Phase 1 is not accepting external contributions yet. The community plugin system
 
 ## Reporting Issues
 
-Open an issue at <https://github.com/macambax/macambax-mandacaru/issues> with:
+Open an issue at <https://github.com/macambax/macambax-mandacaru-cli/issues> with:
 
 - What you tried
 - What you expected

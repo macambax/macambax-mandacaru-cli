@@ -9,7 +9,7 @@
 
 ### User Story 1 - Install and Run the CLI (Priority: P1)
 
-A developer clones the `macambax-mandacaru` repository and wants to get started immediately. They create a virtual environment, run `pip install -e ".[dev]"`, and then type `mandacaru` in their terminal. The CLI responds with a stub message confirming the tool is installed and the entry point works. This proves the package is correctly structured and installable.
+A developer clones the `macambax-mandacaru-cli` repository and wants to get started immediately. They create a virtual environment, run `pip install -e ".[dev]"`, and then type `mandacaru` in their terminal. The CLI responds with a stub message confirming the tool is installed and the entry point works. This proves the package is correctly structured and installable.
 
 **Why this priority**: Without a working installable package and CLI entry point, no other feature can be developed or tested. This is the foundation everything else depends on.
 

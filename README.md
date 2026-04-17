@@ -19,8 +19,8 @@ Mandacaru collects billing data from your AI and cloud providers — OpenAI, GCP
 
 ```bash
 # Clone
-git clone https://github.com/macambax/macambax-mandacaru.git
-cd macambax-mandacaru
+git clone https://github.com/macambax/macambax-mandacaru-cli.git
+cd macambax-mandacaru-cli
 
 # Setup
 python3 -m venv .venv

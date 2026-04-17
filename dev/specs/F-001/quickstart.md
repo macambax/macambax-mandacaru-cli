@@ -9,8 +9,8 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/macambax/macambax-mandacaru.git
-cd macambax-mandacaru
+git clone https://github.com/macambax/macambax-mandacaru-cli.git
+cd macambax-mandacaru-cli
 
 # Create and activate virtual environment
 python3 -m venv .venv
