@@ -1,50 +1,115 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Mandacaru Constitution
+
+> *Every dollar your dev stack costs. One place. Runs on your machine.*
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Local-First, Privacy-Preserving
+Mandacaru runs entirely on the user's machine. No data leaves the local environment in Phase 1. No cloud dependency, no proxy model, no API call interception. The user's credentials and billing data stay in `~/.mandacaru/` and are never transmitted externally. SQLite is the sole data store. This principle is non-negotiable for Phase 1 and Phase 2.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. CLI-First with Rich Output
+All functionality is exposed via the `mandacaru` CLI built with Typer. Output uses Rich for tables, progress bars, panels, and color-coded status. Every command must be usable non-interactively (scriptable) while also providing beautiful terminal output for humans. No web UI in Phase 1.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Collector Architecture
+Each billing provider has its own collector module extending `BaseCollector`. Two collection methods exist: direct API (OpenAI, GCP, Vercel) and Playwright + Ollama vision (Anthropic, GitHub Copilot). New providers are added by creating a single file — never by modifying existing collectors. The collector interface is the primary extension point.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Data Integrity & Auditability
+- Every sync attempt is logged in `sync_log` — success, failure, or partial. Silent failures are unacceptable.
+- `daily_usage` uses a UNIQUE constraint on `(provider_id, usage_date, model_name)` enabling safe upserts. Re-running sync never duplicates data.
+- `raw_response` on `daily_usage` always stores the full API JSON. Zero cost in SQLite. Never discard raw data.
+- Budget alerts are persisted in `budget_alerts` with acknowledgment tracking.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Self-Tracking Transparency
+Mandacaru tracks the cost of its own Ollama calls used for vision extraction. The tool must be honest about its own resource consumption. This is a brand value — "more honest than all of them."
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. Phase-Gated Scope
+Development follows three strict phases. Do not build Phase 2 or Phase 3 features during Phase 1:
+- **Phase 1 — Local CLI:** 5 providers, CLI commands, SQLite, Ollama, no auth, no cloud, no multi-user.
+- **Phase 2 — Open Source:** 20+ providers, optional cloud LLM, manual subscriptions, export, MCP server, plugin system.
+- **Phase 3 — SaaS Cloud:** PostgreSQL, Supabase auth, Stripe billing, React dashboard, multi-user teams.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### VII. Simplicity & YAGNI
+Start simple. No over-engineering. No abstractions for one-time operations. No features beyond what the current phase requires. If a decision can be deferred, defer it. SQLAlchemy enables the SQLite → PostgreSQL migration with a one-line change when the time comes — not before.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Technology Stack
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+| Layer | Technology | Constraint |
+|-------|-----------|------------|
+| Language | Python 3.11+ | Required — team familiarity from Cajú |
+| CLI | Typer + Rich | No alternatives — this is the interface |
+| ORM | SQLAlchemy 2.x | Required for SQLite → PostgreSQL path |
+| Database | SQLite 3.x | Phase 1 only. File at `~/.mandacaru/mandacaru.db` |
+| Browser | Playwright | Headless Chromium for Playwright collectors |
+| Vision | Ollama + llama3.2-vision | Local, free, no API key. Configurable in Phase 2 |
+| Scheduler | APScheduler 3.x | Daemon mode for daily auto-sync |
+| HTTP | httpx | Async-ready for API collectors |
+| Config | python-dotenv | Credentials in `~/.mandacaru/.env` |
+| Package | Hatchling build, pipx install | `pipx install mandacaru` is the target UX |
+
+No additional dependencies without justification. Every dependency added must serve a Phase 1 requirement.
+
+## Security Requirements
+
+- **No credentials in code.** All secrets in `~/.mandacaru/.env`, loaded via python-dotenv. `.env` is always in `.gitignore`.
+- **Playwright cookies** for Anthropic/GitHub stored locally, never in the repo.
+- **GCP service account** uses `billing.viewer` role only — read-only, least privilege.
+- **OpenAI/Vercel tokens** should be scoped to read-only billing access where the provider supports it.
+- **`mandacaru reset`** requires explicit confirmation — it is destructive.
+- No `eval()`, no `exec()`, no dynamic code execution on user input or API responses.
+
+## Development Workflow
+
+- **Methodology:** Spec Kit — `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+- **Build order:** Features implemented sequentially per sprint (Sprint 1 → 4). No skipping ahead.
+- **Testing:** `pytest` before every commit. Fixtures for Ollama responses — no live Ollama calls in unit tests.
+- **Feature tracking:** `dev/FEATURES.md` is the source of truth for implementation status.
+- **Spec source:** `zzz_context_docs/mandacaru_spec.md` is the canonical product specification. Update it when deviating from the spec.
+- **DB access:** All database operations go through SQLAlchemy sessions via `get_session()`. No raw SQL in application code.
+
+## Project Structure
+
+```
+mandacaru/                     ← Python package root
+├── __init__.py                ← __version__ = "0.1.0"
+├── cli.py                     ← Typer app — all commands
+├── startup.py                 ← ASCII cactus welcome screen
+├── config.py                  ← Settings management
+├── db/                        ← Database layer
+│   ├── models.py              ← SQLAlchemy models
+│   ├── migrations.py          ← Schema versioning
+│   └── queries.py             ← Query helpers
+├── collectors/                ← One file per provider
+│   ├── base.py                ← BaseCollector ABC
+│   ├── openai_collector.py
+│   ├── gcp_collector.py
+│   ├── vercel_collector.py
+│   ├── anthropic_collector.py
+│   └── copilot_collector.py
+├── vision/                    ← Ollama vision layer
+│   ├── ollama_client.py
+│   └── prompts.py
+├── scheduler/
+│   └── daemon.py              ← APScheduler daemon
+└── reports/
+    └── renderer.py            ← Rich table rendering
+```
+
+## Brand Identity
+
+| Attribute | Value |
+|-----------|-------|
+| Product name | Mandacaru |
+| Parent brand | MacambaX AI LLC |
+| Primary color | Purple `#7C3AED` |
+| Secondary | Teal `#2ABFA3` |
+| Accent | Orange `#E88E36` |
+| CLI command | `mandacaru` |
+| Icon | ⚡ |
+| License | Apache 2.0 |
+| Repo | github.com/macambax/mandacaru |
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices for Mandacaru. Any deviation must be documented in the spec and approved before implementation. Phase boundaries are hard gates — no Phase 2/3 work until the prior phase is complete and pushed to GitHub.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-17
