@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mandacaru"
+version = "0.1.0"
+description = "Local-first CLI agent that tracks every dollar a developer spends across their entire dev stack."
+license = "Apache-2.0"
+requires-python = ">= 3.11"
+authors = [
+    { name = "MacambaX AI LLC" },
+]
+
+dependencies = [
+    "typer[all]>=0.9",
+    "rich>=13.0",
+    "sqlalchemy>=2.0",
+    "httpx>=0.27",
+    "playwright>=1.40",
+    "apscheduler>=3.10",
+    "python-dotenv>=1.0",
+    "ollama>=0.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+mandacaru = "mandacaru.cli:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
